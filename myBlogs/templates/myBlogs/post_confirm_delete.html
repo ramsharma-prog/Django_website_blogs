@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<form method = 'POST'>
+
+{% csrf_token %}
+{{ form.as_p}}
+<!-- object is in-built attribue in the DeleteView -->
+<p>Are you sure want to delete {{object}}?</p>
+<input type="submit" class = 'btn btn-danger' value= 'Delete'>
+</form>
+
+{% endblock %}

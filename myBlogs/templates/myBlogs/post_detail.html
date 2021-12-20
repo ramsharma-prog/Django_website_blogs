@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h1 class='posttitle loader'>{{post.title}}</h1>
+
+
+
+
+
+
+<!-- CHECK IF THE POST HAS BEEN PUBLISHED THROUGH BOOLEAN VALUE OF PUBLISH_DATE
+THEN DISPLAY THE PUBLISH DATE-->
+
+{% if post.published_date  %}
+<div class='date postdate'>
+  {{ post.published_date }}
+</div>
+<!-- IF THERE IS NO PUBLISH DATE, IT MEANS THE POST HAS NOT BEEN PUNBLISHED
+SO ELSE: ASSIGN PUBLISH BUTTON TO PUBLISH THE POST AND DSIPLAY POST TEXT
+ON THE DISPLAY-->
+{% else %}
+<a class='btn btn-default' href="{% url 'post_publish' pk=post.pk %}">Publish</a>
+{% endif %}
+<p class='postcontent'> {{ post.text|safe|linebreaksbr}}</p>
+
+
+
+
+
+
+<!-- IF USER IS A SUPERUSER THEN USER WILL HAVE THE AUTH TO DO AMENDEMENTS ON
+THE SITE SUCH AS EDIT OR REMOVE THE POST -->
+
+{% if user.is_authenticated %}
+<!-- EDIT -->
+<a class='btn btn-primary' href="{% url 'post_edit' pk=post.pk %}">
+  <span class='glyphicon glyphicon-pencil'></span>
+</a>
+<!-- REMOVE -->
+<a class='btn btn-primary' href="{% url 'post_remove' pk=post.pk %}">
+  <span class='glyphicon glyphicon-remove'></span>
+</a>
+{% endif %}
+
+
+
+
+
+
+
+<!-- COMMENTS SECTION  -->
+
+<!-- add comments section button  -->
+<hr>
+<a class='btn btn-primary btn-comment' href="{% url 'add_comment_to_post' pk=post.pk %}">Add comments</a>
+
+<!-- loop through all the comments and if user is logged in & comments is approved
+then display comment create date -->
+<div class='container'>
+  {% for comment in post.comment.all %}
+  <br>
+  {% if user.is_authenticated or comment.approved_comment %}
+  {{comment.create_date }}
+  <p>{{comment.text|safe|linebreaks}}</p>
+
+  <!-- if comment is not approved then add two buttons either to approve the comments
+  or remove the comment -->
+  {% if not comment.approved_comment %}
+
+  <a class='btn btn-primary' href="{% url 'comment_approve' pk=comment.pk %}">
+    <span class='glyphicon glyphicon-ok'></span>
+  </a>
+  <a class='btn btn-primary' href="{% url 'comment_remove' pk=comment.pk %}">
+    <span class='glyphicon glyphicon-remove'></span>
+  </a>
+
+
+  {% else %}
+  <!-- display comment text -->
+
+   <p>{{comment.text|safe|linebreaks}}</p>
+   <p>Posted by: {{comment.author}}</p
+  {% endif %}
+  {% endif %}
+  {% endfor %}
+</div>
+{% endblock %}
